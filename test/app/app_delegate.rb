@@ -1,7 +1,13 @@
 class AppDelegate
 
+  ActiveRecord = mock
+
   def application(application, didFinishLaunchingWithOptions:launchOptions)
-    run_tests
+    quckie do
+      run_matcher_tests
+      run_stub_tests
+      run_mock_tests
+    end
     true
   end
 
@@ -25,43 +31,45 @@ class AppDelegate
     ENV.delete("quickie_motion_test")
   end
 
+  # Matcher tests.
   #------------------------------------------------------------------------------
-  def run_tests
-    quckie do
-      # Should - passing specs.
-      #--------------------------------------------------------------------------
-      capture { "abc".should == "abc" }.should == true
-      capture { "abc".should != "xyz" }.should == true
-      capture { "abc".should =~ /AB/i }.should == true
-      capture { "abc".should !~ /XY/i }.should == true
-      capture { 1234567.should_be > 0 }.should == true
+  def run_matcher_tests
 
-      # Should Not - passing specs.
-      #--------------------------------------------------------------------------
-      capture { "abc".should_not != "abc" }.should == true
-      capture { "abc".should_not == "xyz" }.should == true
-      capture { "abc".should_not !~ /AB/i }.should == true
-      capture { "abc".should_not =~ /XY/i }.should == true
-      capture { 1234567.should_not_be < 0 }.should == true
+    # Should - passing tests.
+    #--------------------------------------------------------------------------
+    capture { "abc".should == "abc" }.should == true
+    capture { "abc".should != "xyz" }.should == true
+    capture { "abc".should =~ /AB/i }.should == true
+    capture { "abc".should !~ /XY/i }.should == true
+    capture { 1234567.should_be > 0 }.should == true
 
-      # Should - failing specs.
-      #--------------------------------------------------------------------------
-      capture { "abc".should != "abc" }.should == false
-      capture { "abc".should == "xyz" }.should == false
-      capture { "abc".should !~ /AB/i }.should == false
-      capture { "abc".should =~ /XY/i }.should == false
-      capture { 1234567.should_be < 0 }.should == false
+    # Should Not - passing tests.
+    #--------------------------------------------------------------------------
+    capture { "abc".should_not != "abc" }.should == true
+    capture { "abc".should_not == "xyz" }.should == true
+    capture { "abc".should_not !~ /AB/i }.should == true
+    capture { "abc".should_not =~ /XY/i }.should == true
+    capture { 1234567.should_not_be < 0 }.should == true
 
-      # Should Not - failing specs.
-      #--------------------------------------------------------------------------
-      capture { "abc".should_not == "abc" }.should == false
-      capture { "abc".should_not != "xyz" }.should == false
-      capture { "abc".should_not =~ /AB/i }.should == false
-      capture { "abc".should_not !~ /XY/i }.should == false
-      capture { 1234567.should_not_be > 0 }.should == false
+    # Should - failing tests.
+    #--------------------------------------------------------------------------
+    capture { "abc".should != "abc" }.should == false
+    capture { "abc".should == "xyz" }.should == false
+    capture { "abc".should !~ /AB/i }.should == false
+    capture { "abc".should =~ /XY/i }.should == false
+    capture { 1234567.should_be < 0 }.should == false
 
-      # Stub tests.
-      #--------------------------------------------------------------------------
+    # Should Not - failing tests.
+    #--------------------------------------------------------------------------
+    capture { "abc".should_not == "abc" }.should == false
+    capture { "abc".should_not != "xyz" }.should == false
+    capture { "abc".should_not =~ /AB/i }.should == false
+    capture { "abc".should_not !~ /XY/i }.should == false
+    capture { 1234567.should_not_be > 0 }.should == false
+
+    # Stub tests.
+    #--------------------------------------------------------------------------
+    def run_stub_tests
       numbers = [ 1, 2, 3 ]
       letters = %w(a b c)
 
@@ -84,6 +92,24 @@ class AppDelegate
       letters.stub :join, :remove                     # Now remove letters#join stub.
       letters.join.should == "abc"                    # letters.join() should work as expected.
       letters.join(",").should == "a,b,c"             # letters.join(arg) should work as expected.
+    end
+
+    # Mock tests.
+    #--------------------------------------------------------------------------
+    def run_mock_tests
+      record = { id: 42, name: "Quickie" }
+
+      ActiveRecord.respond_to?(:find).should == false
+      ActiveRecord.stub :find, :return => record
+      ActiveRecord.respond_to?(:find).should == true
+      ActiveRecord.find(42).should == record
+
+      ActiveRecord.stub :where, :return => mock
+      ActiveRecord.where.stub :sort, :return => mock
+      ActiveRecord.where.sort.stub :limit, :return => record
+      ActiveRecord.where(:name => "Quickie").sort("id DESC").limit(1).should == record
+
+      ActiveRecord.to_s.should =~ /^#<Quickie::Mock:0x[a-f,0-9]+>/
     end
   end
 end

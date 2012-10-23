@@ -11,6 +11,10 @@ module Kernel
   ensure
     Exception.log_exceptions = current
   end
-  
-  module_function :quckie
+
+  def mock
+    Quickie::Mock.new
+  end
+
+  module_function :quckie, :mock
 end

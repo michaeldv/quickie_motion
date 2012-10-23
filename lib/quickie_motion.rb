@@ -14,5 +14,6 @@ Motion::Project::App.setup do |app|
   app.files.unshift("#{dir}/quickie_motion/runner.rb")
   app.files.unshift("#{dir}/quickie_motion/matcher.rb")
   app.files.unshift("#{dir}/quickie_motion/stub.rb")
+  app.files.unshift("#{dir}/quickie_motion/mock.rb")
   app.files.unshift("#{dir}/quickie_motion/version.rb")
 end
