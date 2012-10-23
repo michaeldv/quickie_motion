@@ -15,4 +15,14 @@ class Object
     Quickie::Stub.new(self, method, options)
   end
   alias_method :stub!, :stub
+  #
+  # Define Object#singleton_class since it's not there (as of RubyMotion 1.26).
+  #
+  unless self.method_defined?(:singleton_class)
+    def singleton_class
+      class << self
+        self
+      end
+    end
+  end
 end

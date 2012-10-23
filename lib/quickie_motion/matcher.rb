@@ -68,8 +68,9 @@ module Quickie
     # by the Runner in at_exit block.
     #--------------------------------------------------------------------------
     def report(status, message = nil)
-      print(status == :success ? '.' : 'F')
+      print(status == :success ? '.' : 'F') unless ENV["quickie_motion_test"]
       Runner.update(status, message)
+      status == :success
     end
 
     # The matcher magic starts here ;-)
