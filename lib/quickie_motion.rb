@@ -9,6 +9,7 @@ end
 
 Motion::Project::App.setup do |app|
   dir = File.dirname(__FILE__)
+  app.files.unshift("#{dir}/quickie_motion/core_ext/kernel.rb")
   app.files.unshift("#{dir}/quickie_motion/core_ext/object.rb")
   app.files.unshift("#{dir}/quickie_motion/runner.rb")
   app.files.unshift("#{dir}/quickie_motion/matcher.rb")

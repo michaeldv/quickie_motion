@@ -69,11 +69,7 @@ module Quickie
     #--------------------------------------------------------------------------
     def report(status, message = nil)
       print(status == :success ? '.' : 'F')
-      if !defined?(::IRB) && !defined?(::Pry)
-        Runner.update(status, message)
-      else
-        puts "\n\n#{message}"
-      end
+      Runner.update(status, message)
     end
 
     # The matcher magic starts here ;-)
