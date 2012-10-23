@@ -1,14 +1,16 @@
 PATH
   remote: .
   specs:
-    quickie (0.3.0)
+    quickie_motion (0.1.0)
 
 GEM
   remote: http://rubygems.org/
   specs:
+    rake (0.9.2.2)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
-  quickie!
+  quickie_motion!
+  rake

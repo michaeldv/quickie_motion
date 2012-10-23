@@ -3,5 +3,8 @@
 # Quickie is freely distributable under the terms of MIT license.
 # See LICENSE file or http://www.opensource.org/licenses/mit-license.php
 #------------------------------------------------------------------------------
-require File.expand_path(File.dirname(__FILE__) + "/matcher_test")
-require File.expand_path(File.dirname(__FILE__) + "/stub_test")
+module Quickie
+  def self.version
+    '0.1.0'
+  end
+end
