@@ -3,12 +3,13 @@ class AppDelegate
   ActiveRecord = mock
 
   def application(application, didFinishLaunchingWithOptions:launchOptions)
+    return true if RUBYMOTION_ENV == "release"
+
     quckie do
       run_matcher_tests
       run_stub_tests
       run_mock_tests
     end
-    true
   end
 
   # Toggle ENV["quickie_motion_test"] to force Quickie return true/false instead

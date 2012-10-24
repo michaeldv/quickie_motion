@@ -16,6 +16,7 @@ Gem::Specification.new do |s|
   s.description = "Quickie adds Object#should, Object#should_not, and Object#stub methods for quick and easy testing of your RubyMotion code"
 
   s.files         = Dir["[A-Z]*[^~|lock]"] + Dir["lib/**/*.rb"] + [".gitignore"]
+  s.test_files    = Dir["test/*"]
   s.executables   = []
   s.require_paths = ["lib"]
 

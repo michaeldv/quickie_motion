@@ -1,124 +1,85 @@
-## Quickie ##
-Quickie is micro library for quick in-place testing of your Ruby code. It adds three
-useful methods: <code>Object#should</code> and <code>Object#should\_not</code> for
-positive and negative assertions, and <code>Object#stub</code> for method stubbing.
+## Quickie for RubyMotion ##
+Quickie for RubyMotion is a gem for quick in-place testing of your RubyMotion code. It provides
+four useful methods:
 
-With Quickie you can conveniently bundle tests along with your Ruby code, typically
-within <code>if $0 == \_\_FILE\_\_</code> conditional statement.
-
-### System Requirements ###
-Ruby 1.9.2 or later.
+* <code>Object#should</code> and <code>Object#should\_not</code> for positive and negative assertions.
+* <code>Object#stub</code> for method stubbing.
+* <code>Kernel#mock</code> for creating object mocks.
 
 ### Installation ###
     # Installing as Ruby gem
-    $ gem install quickie
+    $ gem install quickie_motion
 
     # Cloning the repository
-    $ git clone git://github.com/michaeldv/quickie.git
+    $ git clone git://github.com/michaeldv/quickie_motion.git
 
-### Usage Example - Assertions ###
+### Usage ###
+Generate RubyMotion project, then require "quickie_motion" in projects's Rakefile:
 
-    $ cat > 1.rb
-    class Account                             # Back account class.
-      attr_reader :balance                    # Current account balance.
-      
-      def initialize(amount = 0)              # Open the account.
-        @balance = amount.abs                 # Accept initial deposit.
+    # -*- coding: utf-8 -*-
+    $:.unshift("/Library/RubyMotion/lib")
+    require "motion/project"
+    require "quickie_motion"
+
+    Motion::Project::App.setup do |app|
+      app.name = "your_app_name"
+    end
+
+Add your Quickie tests to the AppDelegate as follows:
+
+    class AppDelegate
+      def application(application, didFinishLaunchingWithOptions:launchOptions)
+        #
+        # Your application code.
+        #
+        return true if RUBYMOTION_ENV == "release"
+        #
+        # Your tests.
+        #
+        quickie do
+          run_tests
+          run_more_tests
+        end 
       end
-      
-      def deposit(amount)                     # Accept a deposit.
-        @balance += amount.abs                # Update current balance.
+
+      private
+
+      def run_tests
+        1.should == 1
       end
-      
-      def status                              # Display account status.
-        "Current balance: $#{balance}"
+
+      def run_more_tests
+        true.should_not == false
       end
     end
 
-    if $0 == __FILE__                         # Execute only when running current Ruby file.
-      require "quickie"                       # Require the gem.
-      
-      acc = Account.new(100)                  # Deposit $100 when opening the account.
-      acc.balance.should == 100               # Initial balance should be $100.
-      acc.deposit(200)                        # Deposit $200 more.
-      acc.balance.should != 100               # The balance should get updated.
-      acc.balance.should == 300               # $100 + $200 = $300.
-      
-      String.should === acc.status            # Account#status returns a string.
-      acc.status.should_not =~ /\$$/          # Status string should contain the balance.
-      acc.status.should =~ /\$\d+\.*\d*$/     # Balance contains digits with optional separator.
-    end
-    ^D
-    $ ruby 1.rb
-    ......
-    
-    Passed: 6, not quite: 0, total tests: 6.
+For more information about the usage of assertions and stubs please check http://github.com/michaeldv/quickie.
 
-### Usage Example - Method Stubs ###
-To set up a stub with optional return value use <code>obj.stub(:method, :return => value)</code>.
-To remove existing stub and restore original method use <code>obj.stub(:method, :remove)</code>.
-
-    $ cat > 2.rb
-    require "net/http"
-    require "json"
-    require "uri"
-    
-    class GemStats                            # Get gems stats from rubygems.org.
-      attr_reader :downloads
-      
-      def initialize(gem, version)
-        uri = URI.parse("http://rubygems.org/api/v1/downloads/#{gem}-#{version}.json")
-        response = Net::HTTP.get_response(uri)
-        @downloads = JSON.parse(response.body)
-      end
-      
-      def total
-        @downloads["total_downloads"]
-      end
-      
-      def version
-        @downloads["version_downloads"]
-      end
-    end
-    
-    if $0 == __FILE__
-      require "quickie"
-
-      response = { :total_downloads => 999_999, :version_downloads => 999 }.to_json
-      response.stub(:body, :return => response)
-      Net::HTTP.stub(:get_response, :return => response)
-      
-      stats = GemStats.new(:awesome_print, '1.0.2')
-      
-      Hash.should === stats.downloads         # Downloads should ba a hash.
-      stats.downloads.keys.size.should == 2   # It should have two keys.
-      stats.total.should == 999_999           # Total downloads should match test data.
-      stats.version.should == 999             # Ditto for version.
-    end
-    ^D
-    $ ruby 2.rb 
-    ....
-        
-    Passed: 4, not quite: 0, total tests: 4.
-
-### Testing Quickie ###
+### Testing Quickie for RubyMotion ###
 Quickie code is tested by the Quickie itself.
 
-    $ ruby test/quickie_test.rb
-    ................................
-    
-    Passed: 32, not quite: 0, total tests: 32.
+    $ rake quickie
+         Build ./build/iPhoneSimulator-6.0-Development
+      Simulate ./build/iPhoneSimulator-6.0-Development/quickie_motion_test.app
+    .....................................
+
+    Passed: 37, not quite: 0, total tests: 37.
+    (main)>
+
+For more details please check <code>quickie_motion_test</code> application in the <code>test</code> directory.
 
 ### Note on Patches/Pull Requests ###
 * Fork the project on Github.
 * Make your feature addition or bug fix.
-* Add test for it, making sure $ ruby test/*.rb all pass.
+* Add tests for it making sure $ rake quickie passes 100%.
 * Commit, do not mess with Rakefile, version, or history.
-* Send me a pull request.
+* Send me commit URL (*do not* send pull requests).
 
 ### License ###
+Copyright (c) 2010-2012 Michael Dvorkin
 
-    Copyright (c) 2011-12 Michael Dvorkin
-    twitter.com/mid
-    %w(mike dvorkin.net) * "@" || %w(mike fatfreecrm.com) * "@"
-    Released under the MIT license. See LICENSE file for details.
+http://www.dvorkin.net
+
+%w(mike dvorkin.net) * "@" || %w(mike fatfreecrm.com) * "@"
+
+Released under the MIT license. See LICENSE file for details.
